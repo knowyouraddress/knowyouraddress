@@ -1,1 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Know Your Correct Address</title>
+<style>
+:root {
+    --bg: #0f1220;
+    --card: #171a2b;
+    --text: #e6e8ff;
+    --accent: #7c8cff;
+    --good: #2ecc71;
+    --bad: #e74c3c;
+    --warning: #f39c12;
+    --gradient-start: #7c8cff;
+    --gradient-end: #9b7cff;
+    --border-radius: 16px;
+    --transition: all 0.3s ease;
+}
 
+.light {
+    --bg: #f3f5ff;
+    --card: #ffffff;
+    --text: #1b1e3a;
+    --accent: #5a6bff;
+    --gradient-start: #5a6bff;
+    --gradient-end: #8a5cff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow-x: hidden;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: var(--transition);
+}
+
+/* Background Animation */
+.bg-anim {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(124, 140, 255, 0.15), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(155, 124, 255, 0.15), transparent 40%),
+        linear-gradient(120deg, #0f1220, #1a1d3a);
+    animation: shift 20s linear infinite;
+}
+
+@keyframes shift {
+    0% { filter: hue-rotate(0); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    backdrop-filter: blur(10px);
+    background: rgba(23, 26, 43, 0.8);
+    border-bottom: 1px solid rgba(124, 140, 255, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.1rem;
+}
+
+.logo-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(124, 140, 255, 0.3);
+    padding: 3px;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.toggle {
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(124, 140, 255, 0.1);
+    border: 1px solid rgba(124, 140, 255, 0.2);
+    transition: var(--transition);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggle:hover {
+    background: rgba(124, 140, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 80px 20px 40px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin: 0 0 16px 0;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeInUp 0.8s ease;
+}
+
+.hero p {
+    opacity: 0.9;
+    font-size: 1.2rem;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Main Content */
+main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px 40px;
+}
+
+/* Cards */
+.card {
+    background: var(--card);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    padding: 32px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(124, 140, 255, 0.1);
+    transition: var(--transition);
+    animation: slideIn 0.6s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(124, 140, 255, 0.15);
+    border-color: rgba(124, 140, 255, 0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h2 {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+    color: var(--text);
+}
+
+h3, h4 {
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+/* Input Area */
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text);
+    opacity: 0.9;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    border-radius: 12px;
+    border: 2px solid rgba(124, 140, 255, 0.2);
+    padding: 16px;
+    font-size: 14px;
+    background: rgba(124, 140, 255, 0.05);
+    color: var(--text);
+    resize: vertical;
+    transition: var(--transition);
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 140, 255, 0.1);
+}
+
+/* Buttons */
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(124, 140, 255, 0.3);
+    opacity: 0.95;
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Action Container */
+.action-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-input-label {
+    display: inline-block;
+    padding: 14px 28px;
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+    border-radius: 12px;
+    cursor: pointer;
+    border: 2px dashed rgba(124, 140, 255, 0.3);
+    transition: var(--transition);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-input-label:hover {
+    background: rgba(124, 140, 255, 0.2);
+    border-color: var(--accent);
+}
+
+/* Results */
+.result {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 12px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+    border-left: 4px solid transparent;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.good {
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid var(--good);
+    border-left-color: var(--good);
+}
+
+.bad {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--bad);
+    border-left-color: var(--bad);
+}
+
+.result h4 {
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-icon {
+    font-size: 1.2rem;
+}
+
+/* Info Cards */
+.info {
+    background: rgba(124, 140, 255, 0.03);
+}
+
+.info p {
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+/* Copyable Address Styles */
+.address-container {
+    background: rgba(124, 140, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 15px 0;
+    border: 1px solid rgba(124, 140, 255, 0.1);
+    transition: var(--transition);
+}
+
+.address-container:hover {
+    background: rgba(124, 140, 255, 0.08);
+    border-color: rgba(124, 140, 255, 0.3);
+}
+
+.address-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.address-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--accent);
+}
+
+.copy-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid rgba(124, 140, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.copy-btn:hover {
+    background: rgba(124, 140, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.copy-btn.copied {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--good);
+    border-color: var(--good);
+}
+
+.address-code {
+    background: rgba(124, 140, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    color: var(--text);
+    word-break: break-all;
+    line-height: 1.5;
+    margin: 0;
+    cursor: text;
+    user-select: all;
+}
+
+/* Donation Section */
+.donation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.donation-card {
+    background: rgba(124, 140, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(124, 140, 255, 0.1);
+    transition: var(--transition);
+}
+
+.donation-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(124, 140, 255, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.network-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.eth-icon { background: rgba(124, 140, 255, 0.1); color: #7c8cff; }
+.sol-icon { background: rgba(0, 0, 0, 0.1); color: #00ffa3; }
+.btc-icon { background: rgba(247, 147, 26, 0.1); color: #f7931a; }
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+a:hover {
+    text-decoration: underline;
+    opacity: 0.9;
+}
+
+/* Footer */
+footer {
+    margin-top: 40px;
+    text-align: center;
+    opacity: 0.7;
+    font-size: 0.9rem;
+    padding: 20px;
+    border-top: 1px solid rgba(124, 140, 255, 0.1);
+}
+
+/* Disclaimer */
+.disclaimer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--card);
+    padding: 20px 24px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: none;
+    max-width: 500px;
+    width: calc(100% - 40px);
+    z-index: 1000;
+    border: 1px solid rgba(124, 140, 255, 0.2);
+    animation: slideUp 0.5s ease forwards;
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.disclaimer p {
+    margin-bottom: 16px;
+}
+
+.disclaimer button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+}
+
+/* Address Type Badge */
+.address-type {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 8px;
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+}
+
+/* Character Diff Highlight */
+.char-diff {
+    background: rgba(231, 76, 60, 0.3);
+    padding: 2px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--card);
+    color: var(--text);
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid var(--accent);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-success {
+    border-left-color: var(--good);
+}
+
+.toast-error {
+    border-left-color: var(--bad);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .action-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .action-container button,
+    .file-input-label {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .donation-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+<div class="bg-anim"></div>
+
+<header>
+    <div class="logo">
+        <!-- Replace with your actual logo image URL -->
+        <img src="logo.png" alt="Wallet Security Logo" class="logo-img">
+        <strong>Know Your Correct Address</strong>
+    </div>
+    <div class="toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>.
+    </div>
+</header>
+
+<section class="hero">
+    <h1>Know Your Correct Address</h1>
+    <p>Protect yourself from advanced wallet address phishing attacks</p>
+</section>
+
+<main>
+    <div class="card">
+        <h2>Compare Wallet Addresses</h2>
+        <p style="margin-bottom: 20px; opacity: 0.9;">Paste both addresses to verify they match exactly</p>
+        
+        <div class="row">
+            <div>
+                <label for="a">
+                    📍 Correct Address 
+                    <span id="type-a" class="address-type"></span>
+                </label>
+                <textarea id="a" placeholder="Paste your known correct address here..."></textarea>
+            </div>
+            <div>
+                <label for="b">
+                    🔍 Address From Ledger / Explorer 
+                    <span id="type-b" class="address-type"></span>
+                </label>
+                <textarea id="b" placeholder="Paste the address you're about to send to..."></textarea>
+            </div>
+        </div>
+        
+        <div class="action-container">
+            <button onclick="compare()">
+                <span id="compare-icon">🔍</span> Compare Addresses
+            </button>
+            
+            <div class="file-input-wrapper">
+                <input type="file" accept="image/*" id="qr" onchange="scanQR(event)">
+                <label for="qr" class="file-input-label">
+                    📱 Scan QR Code
+                </label>
+            </div>
+            
+            <button onclick="clearFields()" style="background: rgba(124, 140, 255, 0.1); color: var(--accent);">
+                🗑️ Clear All
+            </button>
+        </div>
+        
+        <div id="result" class="result">
+            <h4><span id="result-icon">⚠️</span> <span id="result-text">Waiting for comparison...</span></h4>
+            <p id="result-details"></p>
+            <div id="diff-display" style="margin-top: 10px; display: none;"></div>
+        </div>
+    </div>
+
+    <div class="card info">
+        <h3>⚠️ About This Scam</h3>
+        <p>Address poisoning is a sophisticated phishing attack where attackers create look-alike addresses and trick users into copying the wrong one from their transaction history.</p>
+        
+        <h4>🛡️ How This Site Helps</h4>
+        <p>Always paste the known correct address and the one you are about to send to. We do a strict character-by-character comparison before you move funds.</p>
+        
+        <h4>🔑 Address Format Detection</h4>
+        <p>We automatically detect and show the type of address (EVM, Solana, BTC) to ensure you're comparing compatible addresses.</p>
+    </div>
+
+    <div class="card info">
+        <h3>❤️ Support This Project</h3>
+        <p>If this tool helped you avoid a scam, consider supporting development:</p>
+        
+        <div class="donation-grid">
+            <!-- USDT Address -->
+            <div class="donation-card">
+                <div class="network-icon eth-icon">
+                    ⛓️
+                </div>
+                <h4>USDT (All EVM)</h4>
+                <div class="address-container">
+                    <div class="address-header">
+                        <h5>USDT Address</h5>
+                        <button class="copy-btn" onclick="copyToClipboard('0xAa1b1b8993A221046943B84C1DA3d44cAaCc7D33V', this)">
+                            <span class="copy-icon">📋</span> Copy
+                        </button>
+                    </div>
+                    <p class="address-code" onclick="this.select()">0xAa1b1b8993A221046943B84C1DA3d44cAaCc7D33</p>
+                </div>
+            </div>
+            
+            <!-- Solana Address -->
+            <div class="donation-card">
+                <div class="network-icon sol-icon">
+                    ⚡
+                </div>
+                <h4>Solana</h4>
+                <div class="address-container">
+                    <div class="address-header">
+                        <h5>Solana Address</h5>
+                        <button class="copy-btn" onclick="copyToClipboard('4b8DL4HwDUnrayqpCy9Ji61ysxpCVbqd8tggj9KitF2B', this)">
+                            <span class="copy-icon">📋</span> Copy
+                        </button>
+                    </div>
+                    <p class="address-code" onclick="this.select()">4b8DL4HwDUnrayqpCy9Ji61ysxpCVbqd8tggj9KitF2B</p>
+                </div>
+            </div>
+            
+            <!-- BTC Address -->
+            <div class="donation-card">
+                <div class="network-icon btc-icon">
+                    ₿
+                </div>
+                <h4>Bitcoin</h4>
+                <div class="address-container">
+                    <div class="address-header">
+                        <h5>Bitcoin Address</h5>
+                        <button class="copy-btn" onclick="copyToClipboard('bc1qcpz58cx4kt0qjnaa9x4v2hc2yg6kpzyl6rpf2s', this)">
+                            <span class="copy-icon">📋</span> Copy
+                        </button>
+                    </div>
+                    <p class="address-code" onclick="this.select()">bc1qcpz58cx4kt0qjnaa9x4v2hc2yg6kpzyl6rpf2s</p>
+                </div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 30px; text-align: center;">
+            <strong>Telegram:</strong> 
+            <a href="https://t.me/YOURCHANNEL" target="_blank">
+                📢 Join Our Channel
+            </a>
+        </p>
+    </div>
+
+    <footer>
+        <p>🔒 Stay safe. Verify every transaction. Double-check everything.</p>
+        <p style="margin-top: 8px; font-size: 0.85rem;">This tool is open source and does not store any data.</p>
+    </footer>
+</main>
+
+<div id="disc" class="disclaimer">
+    <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">⚠️ Important Disclaimer</h4>
+    <p>This tool does not replace personal verification. Always confirm addresses on hardware wallets. We are not responsible for any lost funds.</p>
+    <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button onclick="hideDisc()">I Understand</button>
+        <button onclick="hideDiscPermanently()" style="background: rgba(124, 140, 255, 0.1); color: var(--accent);">
+            Don't Show Again
+        </button>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast">
+    <span id="toast-icon">📋</span>
+    <span id="toast-text">Address copied to clipboard!</span>
+</div>
+
+<script>
+let theme = 'dark';
+
+// Replace these with your actual addresses
+const addresses = {
+    usdt: "YOUR_USDT_ADDRESS",
+    solana: "YOUR_SOL_ADDRESS",
+    btc: "YOUR_BTC_ADDRESS"
+};
+
+function detectType(addr) {
+    if (/^0x[a-fA-F0-9]{40}$/.test(addr)) return 'EVM';
+    if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) return 'Solana';
+    if (/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/.test(addr)) return 'BTC';
+    return 'Unknown';
+}
+
+function updateTypeBadges() {
+    const a = document.getElementById('a').value.trim();
+    const b = document.getElementById('b').value.trim();
+    
+    const typeA = a ? detectType(a) : '';
+    const typeB = b ? detectType(b) : '';
+    
+    document.getElementById('type-a').textContent = typeA;
+    document.getElementById('type-b').textContent = typeB;
+    
+    // Update icon based on type
+    const iconA = typeA === 'EVM' ? '⛓️' : typeA === 'Solana' ? '⚡' : typeA === 'BTC' ? '₿' : '';
+    const iconB = typeB === 'EVM' ? '⛓️' : typeB === 'Solana' ? '⚡' : typeB === 'BTC' ? '₿' : '';
+    
+    document.getElementById('type-a').textContent = iconA + ' ' + typeA;
+    document.getElementById('type-b').textContent = iconB + ' ' + typeB;
+}
+
+function compare() {
+    const a = document.getElementById('a').value.trim();
+    const b = document.getElementById('b').value.trim();
+    const r = document.getElementById('result');
+    const rText = document.getElementById('result-text');
+    const rDetails = document.getElementById('result-details');
+    const rIcon = document.getElementById('result-icon');
+    const diffDisplay = document.getElementById('diff-display');
+    
+    if (!a || !b) {
+        r.className = 'result bad';
+        rIcon.textContent = '⚠️';
+        rText.textContent = 'Missing Information';
+        rDetails.textContent = 'Please enter both addresses to compare.';
+        r.style.display = 'block';
+        diffDisplay.style.display = 'none';
+        return;
+    }
+    
+    const t1 = detectType(a);
+    const t2 = detectType(b);
+    
+    if (t1 === 'Unknown' || t2 === 'Unknown') {
+        r.className = 'result bad';
+        rIcon.textContent = '❌';
+        rText.textContent = 'Invalid Address Format';
+        rDetails.textContent = 'One or both addresses are not in a recognized format.';
+        r.style.display = 'block';
+        diffDisplay.style.display = 'none';
+    } else if (t1 !== t2) {
+        r.className = 'result bad';
+        rIcon.textContent = '⚠️';
+        rText.textContent = 'Address Type Mismatch';
+        rDetails.textContent = `Different address types detected: ${t1} vs ${t2}. Cannot compare.`;
+        r.style.display = 'block';
+        diffDisplay.style.display = 'none';
+    } else if (a === b) {
+        r.className = 'result good';
+        rIcon.textContent = '✅';
+        rText.textContent = 'Perfect Match!';
+        rDetails.textContent = `Addresses match exactly (${t1}). You are safe to proceed.`;
+        r.style.display = 'block';
+        diffDisplay.style.display = 'none';
+    } else {
+        r.className = 'result bad';
+        rIcon.textContent = '🚨';
+        rText.textContent = 'DANGER: Address Mismatch!';
+        rDetails.textContent = 'Addresses do NOT match. DO NOT SEND ANY FUNDS!';
+        r.style.display = 'block';
+        
+        // Show character differences
+        showCharacterDifferences(a, b);
+    }
+}
+
+function showCharacterDifferences(a, b) {
+    const diffDisplay = document.getElementById('diff-display');
+    diffDisplay.style.display = 'block';
+    diffDisplay.innerHTML = '<h5>Character Differences:</h5>';
+    
+    const maxLength = Math.max(a.length, b.length);
+    let diffHTML = '<div style="font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; overflow-x: auto;">';
+    
+    for (let i = 0; i < maxLength; i++) {
+        const charA = a[i] || '';
+        const charB = b[i] || '';
+        
+        if (charA !== charB) {
+            diffHTML += `<span class="char-diff" title="Position ${i+1}: '${charA}' vs '${charB}'">${charA || ' '}</span>`;
+        } else {
+            diffHTML += charA;
+        }
+    }
+    
+    diffHTML += '</div>';
+    diffHTML += '<p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Highlighted characters show where the addresses differ.</p>';
+    
+    diffDisplay.innerHTML += diffHTML;
+}
+
+function toggleTheme() {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    document.body.classList.toggle('light');
+    
+    const themeIcon = document.getElementById('theme-icon');
+    themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+    
+    // Save theme preference
+    localStorage.setItem('address-checker-theme', theme);
+}
+
+function clearFields() {
+    document.getElementById('a').value = '';
+    document.getElementById('b').value = '';
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('type-a').textContent = '';
+    document.getElementById('type-b').textContent = '';
+    document.getElementById('qr').value = '';
+}
+
+function hideDisc() {
+    document.getElementById('disc').style.display = 'none';
+}
+
+function hideDiscPermanently() {
+    document.getElementById('disc').style.display = 'none';
+    localStorage.setItem('hide-disclaimer', 'true');
+}
+
+// Copy to Clipboard Function
+function copyToClipboard(text, button = null) {
+    // Fallback for browsers without Clipboard API
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showToast('✅ Address copied to clipboard!', 'success');
+            if (button) {
+                button.classList.add('copied');
+                button.innerHTML = '<span class="copy-icon">✅</span> Copied!';
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    button.innerHTML = '<span class="copy-icon">📋</span> Copy';
+                }, 2000);
+            }
+        }
+    } catch (err) {
+        // Use Clipboard API if available
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Address copied to clipboard!', 'success');
+                if (button) {
+                    button.classList.add('copied');
+                    button.innerHTML = '<span class="copy-icon">✅</span> Copied!';
+                    setTimeout(() => {
+                        button.classList.remove('copied');
+                        button.innerHTML = '<span class="copy-icon">📋</span> Copy';
+                    }, 2000);
+                }
+            });
+        } else {
+            showToast('❌ Failed to copy. Please select and copy manually.', 'error');
+        }
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Toast Notification Function
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toast-icon');
+    const toastText = document.getElementById('toast-text');
+    
+    toastText.textContent = message;
+    toast.className = 'toast';
+    
+    if (type === 'success') {
+        toast.classList.add('toast-success');
+        toastIcon.textContent = '✅';
+    } else if (type === 'error') {
+        toast.classList.add('toast-error');
+        toastIcon.textContent = '❌';
+    } else {
+        toastIcon.textContent = '📋';
+    }
+    
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+async function scanQR(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    
+    await img.decode();
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    
+    if ('BarcodeDetector' in window) {
+        const det = new BarcodeDetector({ formats: ['qr_code'] });
+        try {
+            const codes = await det.detect(canvas);
+            if (codes[0]) {
+                document.getElementById('b').value = codes[0].rawValue;
+                updateTypeBadges();
+                
+                // Show success feedback
+                const label = document.querySelector('.file-input-label');
+                label.textContent = '✅ QR Scanned!';
+                label.style.borderColor = '#2ecc71';
+                setTimeout(() => {
+                    label.textContent = '📱 Scan QR Code';
+                    label.style.borderColor = '';
+                }, 2000);
+            } else {
+                showToast('❌ No QR code detected in the image.', 'error');
+            }
+        } catch (err) {
+            showToast('❌ Error scanning QR code: ' + err.message, 'error');
+        }
+    } else {
+        showToast('❌ QR code scanning not supported. Please update your browser.', 'error');
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved theme
+    const savedTheme = localStorage.getItem('address-checker-theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light');
+        theme = 'light';
+        document.getElementById('theme-icon').textContent = '☀️';
+    }
+    
+    // Show disclaimer if not hidden
+    if (!localStorage.getItem('hide-disclaimer')) {
+        setTimeout(() => {
+            document.getElementById('disc').style.display = 'block';
+        }, 3000);
+    }
+    
+    // Add input listeners for real-time type detection
+    document.getElementById('a').addEventListener('input', updateTypeBadges);
+    document.getElementById('b').addEventListener('input', updateTypeBadges);
+    
+    // Add Enter key support
+    document.getElementById('a').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            compare();
+        }
+    });
+    
+    document.getElementById('b').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            compare();
+        }
+    });
+    
+    // Make all address codes selectable on click
+    document.querySelectorAll('.address-code').forEach(code => {
+        code.addEventListener('click', function() {
+            const range = document.createRange();
+            range.selectNodeContents(this);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        });
+    });
+    
+    // Add click-to-copy for address codes
+    document.querySelectorAll('.address-code').forEach(code => {
+        code.addEventListener('dblclick', function() {
+            copyToClipboard(this.textContent);
+        });
+    });
+});
+</script>
+</body>
+</html>
