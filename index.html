@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Know Your Correct Address</title>
-<style>
+    <!-- Metadata -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Verify wallet addresses to prevent phishing attacks. Supports EVM, Solana, Bitcoin addresses including USDT on Solana.">
+    <meta name="keywords" content="wallet security, address verification, phishing protection, crypto safety, Solana, USDT, Ethereum, Bitcoin">
+    <meta name="author" content="Know Your Correct Address">
+    <meta property="og:title" content="Know Your Correct Address - Wallet Security Tool">
+    <meta property="og:description" content="Protect yourself from advanced wallet address phishing attacks. Supports EVM, Solana, Bitcoin addresses.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Know Your Correct Address">
+    <meta name="twitter:description" content="Wallet address verification tool to prevent phishing attacks">
+    <title>Know Your Correct Address - Wallet Security Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
 :root {
     --bg: #0f1220;
     --card: #171a2b;
     --text: #e6e8ff;
+    --text-secondary: #a0a3c1;
     --accent: #7c8cff;
     --good: #2ecc71;
     --bad: #e74c3c;
@@ -17,15 +29,25 @@
     --gradient-end: #9b7cff;
     --border-radius: 16px;
     --transition: all 0.3s ease;
+    --solana-green: #00ffa3;
+    --usdt-blue: #26a17b;
+    --ethereum-purple: #627eea;
 }
 
 .light {
     --bg: #f3f5ff;
     --card: #ffffff;
     --text: #1b1e3a;
+    --text-secondary: #4a4d6b;
     --accent: #5a6bff;
     --gradient-start: #5a6bff;
     --gradient-end: #8a5cff;
+    --solana-green: #00a870;
+    --usdt-blue: #1e8668;
+    --ethereum-purple: #4c6bda;
+    --good: #27ae60;
+    --bad: #c0392b;
+    --warning: #d68910;
 }
 
 * {
@@ -42,6 +64,7 @@ body {
     color: var(--text);
     line-height: 1.6;
     transition: var(--transition);
+    min-height: 100vh;
 }
 
 /* Background Animation */
@@ -50,15 +73,33 @@ body {
     inset: 0;
     z-index: -2;
     background: 
-        radial-gradient(circle at 20% 20%, rgba(124, 140, 255, 0.15), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(155, 124, 255, 0.15), transparent 40%),
+        radial-gradient(circle at 20% 20%, rgba(124, 140, 255, 0.1), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(155, 124, 255, 0.1), transparent 40%),
+        radial-gradient(circle at 40% 60%, rgba(0, 255, 163, 0.05), transparent 40%),
         linear-gradient(120deg, #0f1220, #1a1d3a);
-    animation: shift 20s linear infinite;
+    animation: shift 25s linear infinite;
 }
 
 @keyframes shift {
-    0% { filter: hue-rotate(0); }
-    100% { filter: hue-rotate(360deg); }
+    0% { 
+        background-position: 0% 0%, 100% 100%, 40% 60%;
+        filter: hue-rotate(0); 
+    }
+    50% {
+        background-position: 100% 0%, 0% 100%, 60% 40%;
+    }
+    100% { 
+        background-position: 0% 0%, 100% 100%, 40% 60%;
+        filter: hue-rotate(360deg); 
+    }
+}
+
+.light .bg-anim {
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(124, 140, 255, 0.08), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(155, 124, 255, 0.08), transparent 40%),
+        radial-gradient(circle at 40% 60%, rgba(0, 255, 163, 0.05), transparent 40%),
+        linear-gradient(120deg, #f3f5ff, #e6e9ff);
 }
 
 /* Header */
@@ -66,10 +107,18 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
+    padding: 16px 24px;
     backdrop-filter: blur(10px);
-    background: rgba(23, 26, 43, 0.8);
+    background: rgba(23, 26, 43, 0.85);
     border-bottom: 1px solid rgba(124, 140, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.light header {
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(124, 140, 255, 0.15);
 }
 
 .logo {
@@ -77,11 +126,12 @@ header {
     align-items: center;
     gap: 12px;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .logo-img {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(124, 140, 255, 0.3);
@@ -106,6 +156,8 @@ header {
     display: flex;
     align-items: center;
     gap: 6px;
+    font-weight: 500;
+    color: var(--text);
 }
 
 .toggle:hover {
@@ -116,25 +168,29 @@ header {
 /* Hero Section */
 .hero {
     text-align: center;
-    padding: 80px 20px 40px;
+    padding: 60px 20px 40px;
     max-width: 800px;
     margin: 0 auto;
 }
 
 .hero h1 {
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
     margin: 0 0 16px 0;
     background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: fadeInUp 0.8s ease;
+    line-height: 1.2;
 }
 
 .hero p {
     opacity: 0.9;
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 2vw, 1.2rem);
     animation: fadeInUp 0.8s ease 0.2s both;
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-secondary);
 }
 
 @keyframes fadeInUp {
@@ -150,7 +206,7 @@ header {
 
 /* Main Content */
 main {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px 40px;
 }
@@ -160,17 +216,26 @@ main {
     background: var(--card);
     border-radius: var(--border-radius);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    padding: 32px;
+    padding: clamp(20px, 3vw, 32px);
     margin-bottom: 24px;
     border: 1px solid rgba(124, 140, 255, 0.1);
     transition: var(--transition);
     animation: slideIn 0.6s ease;
 }
 
+.light .card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(124, 140, 255, 0.15);
+}
+
 .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(124, 140, 255, 0.15);
     border-color: rgba(124, 140, 255, 0.3);
+}
+
+.light .card:hover {
+    box-shadow: 0 12px 40px rgba(124, 140, 255, 0.2);
 }
 
 @keyframes slideIn {
@@ -195,40 +260,57 @@ h3, h4 {
     color: var(--text);
 }
 
+p {
+    color: var(--text-secondary);
+}
+
 /* Input Area */
 .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 24px;
     margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
     .row {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
+}
+
+.label-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text);
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
 textarea {
     width: 100%;
-    min-height: 100px;
+    min-height: 120px;
     border-radius: 12px;
     border: 2px solid rgba(124, 140, 255, 0.2);
     padding: 16px;
-    font-size: 14px;
+    font-size: 15px;
     background: rgba(124, 140, 255, 0.05);
     color: var(--text);
     resize: vertical;
     transition: var(--transition);
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    line-height: 1.4;
+}
+
+.light textarea {
+    background: rgba(124, 140, 255, 0.03);
+    border: 2px solid rgba(124, 140, 255, 0.15);
 }
 
 textarea:focus {
@@ -264,13 +346,35 @@ button:active {
     transform: translateY(0);
 }
 
+button.secondary {
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+}
+
+.light button.secondary {
+    background: rgba(124, 140, 255, 0.08);
+}
+
+button.secondary:hover {
+    background: rgba(124, 140, 255, 0.2);
+}
+
+.light button.secondary:hover {
+    background: rgba(124, 140, 255, 0.15);
+}
+
 /* Action Container */
 .action-container {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 24px;
     flex-wrap: wrap;
+}
+
+.qr-buttons-container {
+    display: flex;
+    gap: 8px;
 }
 
 .file-input-wrapper {
@@ -304,9 +408,47 @@ button:active {
     gap: 8px;
 }
 
+.light .file-input-label {
+    background: rgba(124, 140, 255, 0.08);
+    border: 2px dashed rgba(124, 140, 255, 0.25);
+}
+
 .file-input-label:hover {
     background: rgba(124, 140, 255, 0.2);
     border-color: var(--accent);
+}
+
+.light .file-input-label:hover {
+    background: rgba(124, 140, 255, 0.15);
+}
+
+/* Paste to selector */
+.paste-selector {
+    position: absolute;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(124, 140, 255, 0.2);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 100;
+    margin-top: 4px;
+}
+
+.paste-option {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.paste-option:hover {
+    background: rgba(124, 140, 255, 0.1);
 }
 
 /* Results */
@@ -320,8 +462,8 @@ button:active {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .good {
@@ -330,10 +472,28 @@ button:active {
     border-left-color: var(--good);
 }
 
+.light .good {
+    background: rgba(46, 204, 113, 0.08);
+}
+
 .bad {
     background: rgba(231, 76, 60, 0.1);
     border: 1px solid var(--bad);
     border-left-color: var(--bad);
+}
+
+.light .bad {
+    background: rgba(231, 76, 60, 0.08);
+}
+
+.warning {
+    background: rgba(243, 156, 18, 0.1);
+    border: 1px solid var(--warning);
+    border-left-color: var(--warning);
+}
+
+.light .warning {
+    background: rgba(243, 156, 18, 0.08);
 }
 
 .result h4 {
@@ -341,6 +501,7 @@ button:active {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: var(--text);
 }
 
 .result-icon {
@@ -350,6 +511,10 @@ button:active {
 /* Info Cards */
 .info {
     background: rgba(124, 140, 255, 0.03);
+}
+
+.light .info {
+    background: rgba(124, 140, 255, 0.02);
 }
 
 .info p {
@@ -367,9 +532,18 @@ button:active {
     transition: var(--transition);
 }
 
+.light .address-container {
+    background: rgba(124, 140, 255, 0.03);
+    border: 1px solid rgba(124, 140, 255, 0.15);
+}
+
 .address-container:hover {
     background: rgba(124, 140, 255, 0.08);
     border-color: rgba(124, 140, 255, 0.3);
+}
+
+.light .address-container:hover {
+    background: rgba(124, 140, 255, 0.05);
 }
 
 .address-header {
@@ -397,11 +571,21 @@ button:active {
     display: flex;
     align-items: center;
     gap: 5px;
+    font-weight: 500;
+}
+
+.light .copy-btn {
+    background: rgba(124, 140, 255, 0.08);
+    border: 1px solid rgba(124, 140, 255, 0.2);
 }
 
 .copy-btn:hover {
     background: rgba(124, 140, 255, 0.2);
     transform: translateY(-1px);
+}
+
+.light .copy-btn:hover {
+    background: rgba(124, 140, 255, 0.15);
 }
 
 .copy-btn.copied {
@@ -410,11 +594,15 @@ button:active {
     border-color: var(--good);
 }
 
+.light .copy-btn.copied {
+    background: rgba(46, 204, 113, 0.12);
+}
+
 .address-code {
     background: rgba(124, 140, 255, 0.05);
     padding: 12px;
     border-radius: 8px;
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.9rem;
     color: var(--text);
     word-break: break-all;
@@ -422,6 +610,19 @@ button:active {
     margin: 0;
     cursor: text;
     user-select: all;
+    transition: var(--transition);
+}
+
+.light .address-code {
+    background: rgba(124, 140, 255, 0.03);
+}
+
+.address-code:hover {
+    background: rgba(124, 140, 255, 0.08);
+}
+
+.light .address-code:hover {
+    background: rgba(124, 140, 255, 0.05);
 }
 
 /* Donation Section */
@@ -432,12 +633,25 @@ button:active {
     margin: 20px 0;
 }
 
+@media (max-width: 768px) {
+    .donation-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .donation-card {
     background: rgba(124, 140, 255, 0.05);
     border-radius: 12px;
     padding: 20px;
     border: 1px solid rgba(124, 140, 255, 0.1);
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.light .donation-card {
+    background: rgba(124, 140, 255, 0.03);
+    border: 1px solid rgba(124, 140, 255, 0.15);
 }
 
 .donation-card:hover {
@@ -446,10 +660,14 @@ button:active {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
+.light .donation-card:hover {
+    box-shadow: 0 8px 20px rgba(124, 140, 255, 0.1);
+}
+
 .network-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -457,9 +675,40 @@ button:active {
     font-size: 1.2rem;
 }
 
-.eth-icon { background: rgba(124, 140, 255, 0.1); color: #7c8cff; }
-.sol-icon { background: rgba(0, 0, 0, 0.1); color: #00ffa3; }
+.eth-icon { background: rgba(98, 126, 234, 0.1); color: var(--ethereum-purple); }
+.sol-icon { background: rgba(0, 255, 163, 0.1); color: var(--solana-green); }
+.usdt-icon { background: rgba(38, 161, 123, 0.1); color: var(--usdt-blue); }
 .btc-icon { background: rgba(247, 147, 26, 0.1); color: #f7931a; }
+
+.light .eth-icon { background: rgba(98, 126, 234, 0.08); }
+.light .sol-icon { background: rgba(0, 255, 163, 0.08); }
+.light .usdt-icon { background: rgba(38, 161, 123, 0.08); }
+.light .btc-icon { background: rgba(247, 147, 26, 0.08); }
+
+.token-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.token-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+}
+
+.usdt-badge {
+    background: rgba(38, 161, 123, 0.15);
+    color: var(--usdt-blue);
+}
+
+.light .usdt-badge {
+    background: rgba(38, 161, 123, 0.1);
+}
 
 a {
     color: var(--accent);
@@ -485,6 +734,14 @@ footer {
     border-top: 1px solid rgba(124, 140, 255, 0.1);
 }
 
+.light footer {
+    border-top: 1px solid rgba(124, 140, 255, 0.15);
+}
+
+footer p {
+    color: var(--text-secondary);
+}
+
 /* Disclaimer */
 .disclaimer {
     position: fixed;
@@ -503,6 +760,11 @@ footer {
     animation: slideUp 0.5s ease forwards;
 }
 
+.light .disclaimer {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(124, 140, 255, 0.25);
+}
+
 @keyframes slideUp {
     to {
         transform: translateX(-50%) translateY(0);
@@ -511,6 +773,7 @@ footer {
 
 .disclaimer p {
     margin-bottom: 16px;
+    color: var(--text);
 }
 
 .disclaimer button {
@@ -520,22 +783,59 @@ footer {
 
 /* Address Type Badge */
 .address-type {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
-    margin-left: 8px;
     background: rgba(124, 140, 255, 0.1);
     color: var(--accent);
+    gap: 4px;
+}
+
+.light .address-type {
+    background: rgba(124, 140, 255, 0.08);
+}
+
+.solana-type {
+    background: rgba(0, 255, 163, 0.1);
+    color: var(--solana-green);
+}
+
+.light .solana-type {
+    background: rgba(0, 255, 163, 0.08);
+}
+
+.evm-type {
+    background: rgba(98, 126, 234, 0.1);
+    color: var(--ethereum-purple);
+}
+
+.light .evm-type {
+    background: rgba(98, 126, 234, 0.08);
+}
+
+.btc-type {
+    background: rgba(247, 147, 26, 0.1);
+    color: #f7931a;
+}
+
+.light .btc-type {
+    background: rgba(247, 147, 26, 0.08);
 }
 
 /* Character Diff Highlight */
 .char-diff {
-    background: rgba(231, 76, 60, 0.3);
+    background: rgba(231, 76, 60, 0.4);
     padding: 2px;
-    border-radius: 2px;
+    border-radius: 3px;
     font-weight: bold;
+    color: #fff;
+}
+
+.light .char-diff {
+    background: rgba(231, 76, 60, 0.5);
 }
 
 /* Toast Notification */
@@ -556,6 +856,12 @@ footer {
     border-left: 4px solid var(--accent);
     opacity: 0;
     transition: all 0.3s ease;
+    max-width: 400px;
+    width: 90%;
+}
+
+.light .toast {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 .toast.show {
@@ -571,10 +877,115 @@ footer {
     border-left-color: var(--bad);
 }
 
+.toast-warning {
+    border-left-color: var(--warning);
+}
+
+/* Network Info */
+.network-info {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.network-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+}
+
+.light .network-tag {
+    background: rgba(124, 140, 255, 0.08);
+}
+
+/* Camera Modal */
+.camera-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.camera-container {
+    background: var(--card);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+}
+
+.camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.camera-header h3 {
+    margin: 0;
+}
+
+.close-camera {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-camera:hover {
+    background: rgba(124, 140, 255, 0.1);
+}
+
+#camera-video {
+    width: 100%;
+    border-radius: 8px;
+    background: #000;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.capture-btn {
+    background: var(--good);
+    color: white;
+}
+
+.switch-camera-btn {
+    background: rgba(124, 140, 255, 0.1);
+    color: var(--accent);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+    }
+    
+    .hero {
+        padding: 40px 20px 30px;
     }
     
     .card {
@@ -586,6 +997,10 @@ footer {
         align-items: stretch;
     }
     
+    .qr-buttons-container {
+        width: 100%;
+    }
+    
     .action-container button,
     .file-input-label {
         width: 100%;
@@ -595,64 +1010,110 @@ footer {
     .donation-grid {
         grid-template-columns: 1fr;
     }
+    
+    header {
+        padding: 12px 16px;
+    }
+    
+    .logo {
+        font-size: 1rem;
+    }
 }
-</style>
+
+@media (max-width: 480px) {
+    main {
+        padding: 0 16px 30px;
+    }
+    
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+    </style>
 </head>
 <body>
 <div class="bg-anim"></div>
 
 <header>
     <div class="logo">
-        <!-- Replace with your actual logo image URL -->
         <img src="logo.png" alt="Wallet Security Logo" class="logo-img">
         <strong>Know Your Correct Address</strong>
     </div>
     <div class="toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>.
+        <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
     </div>
 </header>
 
 <section class="hero">
     <h1>Know Your Correct Address</h1>
-    <p>Protect yourself from advanced wallet address phishing attacks</p>
+    <p>Protect yourself from advanced wallet address phishing attacks. Supports EVM, Solana, Bitcoin, and USDT on Solana.</p>
 </section>
 
 <main>
     <div class="card">
         <h2>Compare Wallet Addresses</h2>
-        <p style="margin-bottom: 20px; opacity: 0.9;">Paste both addresses to verify they match exactly</p>
+        <p style="margin-bottom: 20px;">Paste both addresses to verify they match exactly</p>
         
         <div class="row">
             <div>
-                <label for="a">
-                    📍 Correct Address 
+                <div class="label-container">
+                    <label for="a">
+                        📍 Correct Address
+                    </label>
                     <span id="type-a" class="address-type"></span>
-                </label>
-                <textarea id="a" placeholder="Paste your known correct address here..."></textarea>
+                </div>
+                <textarea id="a" placeholder="Paste your known correct address here...
+Example Solana: G47qLf4oRyYxkqZP12QnVQ3...
+Example EVM: 0x742d35Cc6634C0532925a3b8...
+Example BTC: bc1qxy2kgdygjrsqtzq2n0yr..." 
+spellcheck="false"></textarea>
+                <div class="network-info" id="network-info-a"></div>
             </div>
             <div>
-                <label for="b">
-                    🔍 Address From Ledger / Explorer 
+                <div class="label-container">
+                    <label for="b">
+                        🔍 Address From Ledger / Explorer
+                    </label>
                     <span id="type-b" class="address-type"></span>
-                </label>
-                <textarea id="b" placeholder="Paste the address you're about to send to..."></textarea>
+                </div>
+                <textarea id="b" placeholder="Paste the address you're about to send to...
+Tip: Copy from multiple sources to verify
+Use QR scanner for hardware wallets" 
+spellcheck="false"></textarea>
+                <div class="network-info" id="network-info-b"></div>
             </div>
         </div>
         
         <div class="action-container">
-            <button onclick="compare()">
+            <button onclick="compare()" id="compare-btn">
                 <span id="compare-icon">🔍</span> Compare Addresses
             </button>
             
-            <div class="file-input-wrapper">
-                <input type="file" accept="image/*" id="qr" onchange="scanQR(event)">
-                <label for="qr" class="file-input-label">
-                    📱 Scan QR Code
-                </label>
+            <div class="qr-buttons-container">
+                <div class="file-input-wrapper" id="qr-file-wrapper">
+                    <input type="file" accept="image/*" id="qr-file" onchange="scanQRFromFile(event)">
+                    <label for="qr-file" class="file-input-label">
+                        <i class="fas fa-upload"></i> Upload QR
+                    </label>
+                </div>
+                
+                <button onclick="openCamera()" class="secondary" id="camera-btn">
+                    <i class="fas fa-camera"></i> Capture
+                </button>
             </div>
             
-            <button onclick="clearFields()" style="background: rgba(124, 140, 255, 0.1); color: var(--accent);">
-                🗑️ Clear All
+            <div id="paste-selector" class="paste-selector"></div>
+            
+            <button onclick="clearFields()" class="secondary">
+                <i class="fas fa-trash-alt"></i> Clear All
             </button>
         </div>
         
@@ -664,66 +1125,100 @@ footer {
     </div>
 
     <div class="card info">
-        <h3>⚠️ About This Scam</h3>
+        <h3><i class="fas fa-exclamation-triangle"></i> About Address Poisoning Scams</h3>
         <p>Address poisoning is a sophisticated phishing attack where attackers create look-alike addresses and trick users into copying the wrong one from their transaction history.</p>
         
-        <h4>🛡️ How This Site Helps</h4>
+        <h4><i class="fas fa-shield-alt"></i> How This Tool Helps</h4>
         <p>Always paste the known correct address and the one you are about to send to. We do a strict character-by-character comparison before you move funds.</p>
         
-        <h4>🔑 Address Format Detection</h4>
-        <p>We automatically detect and show the type of address (EVM, Solana, BTC) to ensure you're comparing compatible addresses.</p>
+        <h4><i class="fas fa-network-wired"></i> Supported Networks</h4>
+        <div class="network-info">
+            <span class="network-tag solana-type"><i class="fas fa-bolt"></i> Solana (Native & USDT)</span>
+            <span class="network-tag evm-type"><i class="fab fa-ethereum"></i> EVM Chains (ETH, BSC, etc.)</span>
+            <span class="network-tag btc-type"><i class="fab fa-bitcoin"></i> Bitcoin</span>
+            <span class="network-tag"><i class="fas fa-coins"></i> USDT on Solana</span>
+        </div>
     </div>
 
     <div class="card info">
-        <h3>❤️ Support This Project</h3>
+        <h3><i class="fas fa-heart"></i> Support This Project</h3>
         <p>If this tool helped you avoid a scam, consider supporting development:</p>
         
         <div class="donation-grid">
-            <!-- USDT Address -->
+            <!-- Solana Section -->
             <div class="donation-card">
-                <div class="network-icon eth-icon">
-                    ⛓️
+                <div class="network-icon sol-icon">
+                    <i class="fas fa-bolt"></i>
                 </div>
-                <h4>USDT (All EVM)</h4>
+                <h4>Solana (SOL & USDT)</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;">Supports native SOL and SPL tokens like USDT</p>
+                
                 <div class="address-container">
                     <div class="address-header">
-                        <h5>USDT Address</h5>
+                        <h5>Solana Address</h5>
+                        <button class="copy-btn" onclick="copyToClipboard('4b8DL4HwDUnrayqpCy9Ji61ysxpCVbqd8tggj9KitF2B', this)">
+                            <i class="far fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <p class="address-code" onclick="this.select()">4b8DL4HwDUnrayqpCy9Ji61ysxpCVbqd8tggj9KitF2B</p>
+                    <div class="token-badges">
+                        <span class="token-badge">SOL</span>
+                        <span class="token-badge usdt-badge">USDT</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- USDT (EVM) Section -->
+            <div class="donation-card">
+                <div class="network-icon usdt-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h4>USDT (EVM Chains)</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;">Ethereum, BSC, Polygon, Arbitrum, etc.</p>
+                
+                <div class="address-container">
+                    <div class="address-header">
+                        <h5>USDT Address (EVM)</h5>
                         <button class="copy-btn" onclick="copyToClipboard('0xAa1b1b8993A221046943B84C1DA3d44cAaCc7D33', this)">
-                            <span class="copy-icon">📋</span> Copy
+                            <i class="far fa-copy"></i> Copy
                         </button>
                     </div>
                     <p class="address-code" onclick="this.select()">0xAa1b1b8993A221046943B84C1DA3d44cAaCc7D33</p>
                 </div>
             </div>
             
-            <!-- Solana Address -->
+            <!-- EVM Section -->
             <div class="donation-card">
-                <div class="network-icon sol-icon">
-                    ⚡
+                <div class="network-icon eth-icon">
+                    <i class="fab fa-ethereum"></i>
                 </div>
-                <h4>Solana</h4>
+                <h4>Ethereum (ETH)</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;">All EVM</p>
+                
                 <div class="address-container">
                     <div class="address-header">
-                        <h5>Solana Address</h5>
-                        <button class="copy-btn" onclick="copyToClipboard('4b8DL4HwDUnrayqpCy9Ji61ysxpCVbqd8tggj9KitF2B', this)">
-                            <span class="copy-icon">📋</span> Copy
+                        <h5>Ethereum Address</h5>
+                        <button class="copy-btn" onclick="copyToClipboard('0xAa1b1b8993A221046943B84C1DA3d44cAaCc7D33', this)">
+                            <i class="far fa-copy"></i> Copy
                         </button>
                     </div>
-                    <p class="address-code" onclick="this.select()">4b8DL4HwDUnrayqpCy9Ji61ysxpCVbqd8tggj9KitF2B</p>
+                    <p class="address-code" onclick="this.select()">0xAa1b1b8993A221046943B84C1DA3d44cAaCc7D33</p>
                 </div>
             </div>
             
-            <!-- BTC Address -->
+            <!-- BTC Section -->
             <div class="donation-card">
                 <div class="network-icon btc-icon">
-                    ₿
+                    <i class="fab fa-bitcoin"></i>
                 </div>
                 <h4>Bitcoin</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;">Native BTC (SegWit supported)</p>
+                
                 <div class="address-container">
                     <div class="address-header">
                         <h5>Bitcoin Address</h5>
                         <button class="copy-btn" onclick="copyToClipboard('bc1qcpz58cx4kt0qjnaa9x4v2hc2yg6kpzyl6rpf2s', this)">
-                            <span class="copy-icon">📋</span> Copy
+                            <i class="far fa-copy"></i> Copy
                         </button>
                     </div>
                     <p class="address-code" onclick="this.select()">bc1qcpz58cx4kt0qjnaa9x4v2hc2yg6kpzyl6rpf2s</p>
@@ -734,23 +1229,49 @@ footer {
         <p style="margin-top: 30px; text-align: center;">
             <strong>Telegram:</strong> 
             <a href="https://t.me/YOURCHANNEL" target="_blank">
-                📢 Join Our Channel
+                <i class="fab fa-telegram"></i> Join Our Channel
+            </a>
+            &nbsp;&nbsp;|&nbsp;&nbsp;
+            <strong>GitHub:</strong> 
+            <a href="https://github.com/YOURUSERNAME" target="_blank">
+                <i class="fab fa-github"></i> Star on GitHub
             </a>
         </p>
     </div>
 
     <footer>
-        <p>🔒 Stay safe. Verify every transaction. Double-check everything.</p>
-        <p style="margin-top: 8px; font-size: 0.85rem;">This tool is open source and does not store any data.</p>
+        <p><i class="fas fa-shield-alt"></i> Stay safe. Verify every transaction. Double-check everything.</p>
+        <p style="margin-top: 8px; font-size: 0.85rem;">This tool is open source and does not store any data. All processing happens locally in your browser.</p>
     </footer>
 </main>
 
+<!-- Camera Modal -->
+<div id="camera-modal" class="camera-modal">
+    <div class="camera-container">
+        <div class="camera-header">
+            <h3><i class="fas fa-camera"></i> Scan QR Code</h3>
+            <button class="close-camera" onclick="closeCamera()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <video id="camera-video" autoplay playsinline></video>
+        <div class="camera-controls">
+            <button onclick="captureQR()" class="capture-btn" id="capture-btn">
+                <i class="fas fa-camera"></i> Capture
+            </button>
+            <button onclick="switchCamera()" class="switch-camera-btn" id="switch-camera-btn">
+                <i class="fas fa-sync-alt"></i> Switch Camera
+            </button>
+        </div>
+    </div>
+</div>
+
 <div id="disc" class="disclaimer">
-    <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">⚠️ Important Disclaimer</h4>
+    <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-exclamation-triangle"></i> Important Disclaimer</h4>
     <p>This tool does not replace personal verification. Always confirm addresses on hardware wallets. We are not responsible for any lost funds.</p>
     <div style="display: flex; gap: 10px; margin-top: 16px;">
         <button onclick="hideDisc()">I Understand</button>
-        <button onclick="hideDiscPermanently()" style="background: rgba(124, 140, 255, 0.1); color: var(--accent);">
+        <button onclick="hideDiscPermanently()" class="secondary">
             Don't Show Again
         </button>
     </div>
@@ -764,37 +1285,109 @@ footer {
 
 <script>
 let theme = 'dark';
+let lastComparison = null;
+let pasteTarget = null; // Which input to paste the QR result to
+let cameraStream = null;
+let currentFacingMode = 'environment';
 
-// Replace these with your actual addresses
-const addresses = {
-    usdt: "YOUR_USDT_ADDRESS",
-    solana: "YOUR_SOL_ADDRESS",
-    btc: "YOUR_BTC_ADDRESS"
+// Address examples for quick testing
+const testAddresses = {
+    solana: "G47qLf4oRyYxkqZP12QnVQ3yUwKj4bQvXthjJN9Hp5E8",
+    solanaFake: "G47qLf4oRyYxkqZP12QnVQ3yUwKj4bQvXthjJN9Hp5E9",
+    evm: "0x742d35Cc6634C0532925a3b8B944C9A6B8d6E1A4",
+    evmFake: "0x742d35Cc6634C0532925a3b8B944C9A6B8d6E1A5",
+    btc: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+    btcFake: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlj"
 };
 
 function detectType(addr) {
-    if (/^0x[a-fA-F0-9]{40}$/.test(addr)) return 'EVM';
-    if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) return 'Solana';
-    if (/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/.test(addr)) return 'BTC';
-    return 'Unknown';
+    const cleanAddr = addr.trim();
+    
+    // EVM addresses (0x + 40 hex chars)
+    if (/^0x[a-fA-F0-9]{40}$/.test(cleanAddr)) {
+        return {
+            type: 'EVM',
+            icon: '⛓️',
+            name: 'EVM Chain',
+            colorClass: 'evm-type',
+            networks: ['Ethereum', 'BSC', 'Polygon', 'Arbitrum', 'Optimism']
+        };
+    }
+    
+    // Solana addresses (32-44 base58 chars)
+    if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanAddr)) {
+        return {
+            type: 'Solana',
+            icon: '⚡',
+            name: 'Solana',
+            colorClass: 'solana-type',
+            networks: ['Solana Mainnet', 'SPL Tokens']
+        };
+    }
+    
+    // Bitcoin addresses
+    if (/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/.test(cleanAddr)) {
+        return {
+            type: 'BTC',
+            icon: '₿',
+            name: 'Bitcoin',
+            colorClass: 'btc-type',
+            networks: ['Bitcoin Mainnet']
+        };
+    }
+    
+    return {
+        type: 'Unknown',
+        icon: '❓',
+        name: 'Unknown',
+        colorClass: '',
+        networks: []
+    };
 }
 
 function updateTypeBadges() {
     const a = document.getElementById('a').value.trim();
     const b = document.getElementById('b').value.trim();
     
-    const typeA = a ? detectType(a) : '';
-    const typeB = b ? detectType(b) : '';
+    const typeA = detectType(a);
+    const typeB = detectType(b);
     
-    document.getElementById('type-a').textContent = typeA;
-    document.getElementById('type-b').textContent = typeB;
+    // Update badges
+    const badgeA = document.getElementById('type-a');
+    badgeA.textContent = `${typeA.icon} ${typeA.name}`;
+    badgeA.className = `address-type ${typeA.colorClass}`;
     
-    // Update icon based on type
-    const iconA = typeA === 'EVM' ? '⛓️' : typeA === 'Solana' ? '⚡' : typeA === 'BTC' ? '₿' : '';
-    const iconB = typeB === 'EVM' ? '⛓️' : typeB === 'Solana' ? '⚡' : typeB === 'BTC' ? '₿' : '';
+    const badgeB = document.getElementById('type-b');
+    badgeB.textContent = `${typeB.icon} ${typeB.name}`;
+    badgeB.className = `address-type ${typeB.colorClass}`;
     
-    document.getElementById('type-a').textContent = iconA + ' ' + typeA;
-    document.getElementById('type-b').textContent = iconB + ' ' + typeB;
+    // Update network info
+    updateNetworkInfo('a', typeA);
+    updateNetworkInfo('b', typeB);
+    
+    // Enable/disable compare button
+    const compareBtn = document.getElementById('compare-btn');
+    compareBtn.disabled = !a || !b;
+}
+
+function updateNetworkInfo(elementId, typeInfo) {
+    const container = document.getElementById(`network-info-${elementId}`);
+    
+    if (typeInfo.type === 'Unknown') {
+        container.innerHTML = '<span style="color: var(--bad); font-size: 0.85rem;">Invalid address format</span>';
+        return;
+    }
+    
+    if (typeInfo.networks.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    const networksHTML = typeInfo.networks.map(network => 
+        `<span class="network-tag">${network}</span>`
+    ).join('');
+    
+    container.innerHTML = networksHTML;
 }
 
 function compare() {
@@ -806,12 +1399,11 @@ function compare() {
     const rIcon = document.getElementById('result-icon');
     const diffDisplay = document.getElementById('diff-display');
     
+    // Store for potential retry
+    lastComparison = { a, b };
+    
     if (!a || !b) {
-        r.className = 'result bad';
-        rIcon.textContent = '⚠️';
-        rText.textContent = 'Missing Information';
-        rDetails.textContent = 'Please enter both addresses to compare.';
-        r.style.display = 'block';
+        showResult('warning', '⚠️ Missing Information', 'Please enter both addresses to compare.');
         diffDisplay.style.display = 'none';
         return;
     }
@@ -819,60 +1411,62 @@ function compare() {
     const t1 = detectType(a);
     const t2 = detectType(b);
     
-    if (t1 === 'Unknown' || t2 === 'Unknown') {
-        r.className = 'result bad';
-        rIcon.textContent = '❌';
-        rText.textContent = 'Invalid Address Format';
-        rDetails.textContent = 'One or both addresses are not in a recognized format.';
-        r.style.display = 'block';
+    if (t1.type === 'Unknown' || t2.type === 'Unknown') {
+        showResult('bad', '❌ Invalid Address Format', 
+            'One or both addresses are not in a recognized format. Please check and try again.');
         diffDisplay.style.display = 'none';
-    } else if (t1 !== t2) {
-        r.className = 'result bad';
-        rIcon.textContent = '⚠️';
-        rText.textContent = 'Address Type Mismatch';
-        rDetails.textContent = `Different address types detected: ${t1} vs ${t2}. Cannot compare.`;
-        r.style.display = 'block';
+    } else if (t1.type !== t2.type) {
+        showResult('bad', '⚠️ Address Type Mismatch', 
+            `Different address types detected: ${t1.name} vs ${t2.name}. Cannot compare incompatible addresses.`);
         diffDisplay.style.display = 'none';
     } else if (a === b) {
-        r.className = 'result good';
-        rIcon.textContent = '✅';
-        rText.textContent = 'Perfect Match!';
-        rDetails.textContent = `Addresses match exactly (${t1}). You are safe to proceed.`;
-        r.style.display = 'block';
+        showResult('good', '✅ Perfect Match!', 
+            `Addresses match exactly (${t1.name}). You are safe to proceed.`);
         diffDisplay.style.display = 'none';
     } else {
-        r.className = 'result bad';
-        rIcon.textContent = '🚨';
-        rText.textContent = 'DANGER: Address Mismatch!';
-        rDetails.textContent = 'Addresses do NOT match. DO NOT SEND ANY FUNDS!';
-        r.style.display = 'block';
-        
-        // Show character differences
+        showResult('bad', '🚨 DANGER: Address Mismatch!', 
+            'Addresses do NOT match. DO NOT SEND ANY FUNDS! This could be an address poisoning attack.');
         showCharacterDifferences(a, b);
     }
+}
+
+function showResult(type, title, message) {
+    const r = document.getElementById('result');
+    const rText = document.getElementById('result-text');
+    const rDetails = document.getElementById('result-details');
+    const rIcon = document.getElementById('result-icon');
+    
+    r.className = `result ${type}`;
+    rIcon.textContent = title.split(' ')[0]; // Get the emoji
+    rText.textContent = title;
+    rDetails.textContent = message;
+    r.style.display = 'block';
+    
+    // Scroll to result
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function showCharacterDifferences(a, b) {
     const diffDisplay = document.getElementById('diff-display');
     diffDisplay.style.display = 'block';
-    diffDisplay.innerHTML = '<h5>Character Differences:</h5>';
+    diffDisplay.innerHTML = '<h5><i class="fas fa-search"></i> Character Differences:</h5>';
     
     const maxLength = Math.max(a.length, b.length);
-    let diffHTML = '<div style="font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; overflow-x: auto;">';
+    let diffHTML = '<div style="font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; overflow-x: auto; line-height: 1.8;">';
     
     for (let i = 0; i < maxLength; i++) {
         const charA = a[i] || '';
         const charB = b[i] || '';
         
         if (charA !== charB) {
-            diffHTML += `<span class="char-diff" title="Position ${i+1}: '${charA}' vs '${charB}'">${charA || ' '}</span>`;
+            diffHTML += `<span class="char-diff" title="Position ${i+1}: '${charA || ' '}' vs '${charB || ' '}'">${charA || ' '}</span>`;
         } else {
             diffHTML += charA;
         }
     }
     
     diffHTML += '</div>';
-    diffHTML += '<p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Highlighted characters show where the addresses differ.</p>';
+    diffHTML += '<p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Highlighted characters show where the addresses differ. Look for subtle changes like 0/O, l/I/1.</p>';
     
     diffDisplay.innerHTML += diffHTML;
 }
@@ -882,7 +1476,15 @@ function toggleTheme() {
     document.body.classList.toggle('light');
     
     const themeIcon = document.getElementById('theme-icon');
-    themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+    const themeText = document.getElementById('theme-text');
+    
+    if (theme === 'dark') {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Dark';
+    } else {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Light';
+    }
     
     // Save theme preference
     localStorage.setItem('address-checker-theme', theme);
@@ -894,7 +1496,9 @@ function clearFields() {
     document.getElementById('result').style.display = 'none';
     document.getElementById('type-a').textContent = '';
     document.getElementById('type-b').textContent = '';
-    document.getElementById('qr').value = '';
+    document.getElementById('qr-file').value = '';
+    document.getElementById('network-info-a').innerHTML = '';
+    document.getElementById('network-info-b').innerHTML = '';
 }
 
 function hideDisc() {
@@ -906,50 +1510,34 @@ function hideDiscPermanently() {
     localStorage.setItem('hide-disclaimer', 'true');
 }
 
-// Copy to Clipboard Function
 function copyToClipboard(text, button = null) {
-    // Fallback for browsers without Clipboard API
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
+    if (!navigator.clipboard) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showToast('✅ Address copied to clipboard!', 'success');
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
             showToast('✅ Address copied to clipboard!', 'success');
-            if (button) {
-                button.classList.add('copied');
-                button.innerHTML = '<span class="copy-icon">✅</span> Copied!';
-                setTimeout(() => {
-                    button.classList.remove('copied');
-                    button.innerHTML = '<span class="copy-icon">📋</span> Copy';
-                }, 2000);
-            }
-        }
-    } catch (err) {
-        // Use Clipboard API if available
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('✅ Address copied to clipboard!', 'success');
-                if (button) {
-                    button.classList.add('copied');
-                    button.innerHTML = '<span class="copy-icon">✅</span> Copied!';
-                    setTimeout(() => {
-                        button.classList.remove('copied');
-                        button.innerHTML = '<span class="copy-icon">📋</span> Copy';
-                    }, 2000);
-                }
-            });
-        } else {
-            showToast('❌ Failed to copy. Please select and copy manually.', 'error');
-        }
+        }).catch(err => {
+            showToast('❌ Failed to copy. Please copy manually.', 'error');
+        });
     }
     
-    document.body.removeChild(textArea);
+    if (button) {
+        button.classList.add('copied');
+        button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            button.classList.remove('copied');
+            button.innerHTML = '<i class="far fa-copy"></i> Copy';
+        }, 2000);
+    }
 }
 
-// Toast Notification Function
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
     const toastIcon = document.getElementById('toast-icon');
@@ -960,12 +1548,12 @@ function showToast(message, type = 'info') {
     
     if (type === 'success') {
         toast.classList.add('toast-success');
-        toastIcon.textContent = '✅';
+        toastIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
     } else if (type === 'error') {
         toast.classList.add('toast-error');
-        toastIcon.textContent = '❌';
+        toastIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
     } else {
-        toastIcon.textContent = '📋';
+        toastIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
     }
     
     toast.classList.add('show');
@@ -975,46 +1563,301 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-async function scanQR(e) {
-    const file = e.target.files[0];
+async function scanQRFromFile(event) {
+    const file = event.target.files[0];
     if (!file) return;
     
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
+    const label = document.querySelector('.file-input-label');
+    label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
     
-    await img.decode();
+    // Show paste selector
+    showPasteSelector(label);
     
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    
-    if ('BarcodeDetector' in window) {
-        const det = new BarcodeDetector({ formats: ['qr_code'] });
-        try {
-            const codes = await det.detect(canvas);
-            if (codes[0]) {
-                document.getElementById('b').value = codes[0].rawValue;
-                updateTypeBadges();
+    try {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        
+        await img.decode();
+        
+        // Simple QR detection (for production, use a proper library)
+        if ('BarcodeDetector' in window) {
+            const detector = new BarcodeDetector({ formats: ['qr_code'] });
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            
+            const barcodes = await detector.detect(canvas);
+            
+            if (barcodes.length > 0) {
+                const qrContent = barcodes[0].rawValue;
                 
-                // Show success feedback
-                const label = document.querySelector('.file-input-label');
-                label.textContent = '✅ QR Scanned!';
+                // Store the result and wait for user to choose where to paste
+                window.qrResult = qrContent;
+                
+                label.innerHTML = '<i class="fas fa-qrcode"></i> QR Detected!';
                 label.style.borderColor = '#2ecc71';
-                setTimeout(() => {
-                    label.textContent = '📱 Scan QR Code';
-                    label.style.borderColor = '';
-                }, 2000);
+                showToast('✅ QR code detected! Choose where to paste.', 'success');
+                
+                // Auto-paste to the empty field if one is empty
+                autoPasteQRResult(qrContent);
             } else {
                 showToast('❌ No QR code detected in the image.', 'error');
+                label.innerHTML = '<i class="fas fa-upload"></i> Upload QR';
+                label.style.borderColor = '';
+                window.qrResult = null;
             }
-        } catch (err) {
-            showToast('❌ Error scanning QR code: ' + err.message, 'error');
+        } else {
+            showToast('❌ QR scanning requires a modern browser.', 'error');
+            label.innerHTML = '<i class="fas fa-upload"></i> Upload QR';
+            label.style.borderColor = '';
+            window.qrResult = null;
+        }
+    } catch (error) {
+        console.error('QR scanning error:', error);
+        showToast('❌ Error scanning QR code.', 'error');
+        label.innerHTML = '<i class="fas fa-upload"></i> Upload QR';
+        label.style.borderColor = '';
+        window.qrResult = null;
+    }
+}
+
+function showPasteSelector(nearElement) {
+    const selector = document.getElementById('paste-selector');
+    const rect = nearElement.getBoundingClientRect();
+    
+    selector.innerHTML = `
+        <div class="paste-option" onclick="pasteQRResult('a')">
+            <i class="fas fa-keyboard"></i> Paste to Correct Address
+        </div>
+        <div class="paste-option" onclick="pasteQRResult('b')">
+            <i class="fas fa-search"></i> Paste to Address to Verify
+        </div>
+    `;
+    
+    selector.style.display = 'flex';
+    selector.style.position = 'absolute';
+    selector.style.top = `${rect.bottom + 5}px`;
+    selector.style.left = `${rect.left}px`;
+    
+    // Close selector when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', closePasteSelectorOnClick);
+    }, 100);
+}
+
+function closePasteSelectorOnClick(event) {
+    const selector = document.getElementById('paste-selector');
+    if (!selector.contains(event.target) && 
+        !document.querySelector('.file-input-label').contains(event.target)) {
+        selector.style.display = 'none';
+        document.removeEventListener('click', closePasteSelectorOnClick);
+    }
+}
+
+function pasteQRResult(targetId) {
+    if (window.qrResult) {
+        const target = document.getElementById(targetId);
+        target.value = window.qrResult;
+        updateTypeBadges();
+        
+        showToast(`✅ QR code pasted to ${targetId === 'a' ? 'Correct Address' : 'Address to Verify'}`, 'success');
+        
+        // Reset the label
+        const label = document.querySelector('.file-input-label');
+        label.innerHTML = '<i class="fas fa-upload"></i> Upload QR';
+        label.style.borderColor = '';
+        
+        // Clear the file input
+        document.getElementById('qr-file').value = '';
+        
+        // Close the selector
+        const selector = document.getElementById('paste-selector');
+        selector.style.display = 'none';
+        document.removeEventListener('click', closePasteSelectorOnClick);
+        
+        window.qrResult = null;
+    }
+}
+
+function autoPasteQRResult(qrContent) {
+    const a = document.getElementById('a').value.trim();
+    const b = document.getElementById('b').value.trim();
+    
+    // If one field is empty, auto-paste to it
+    if (!a && b) {
+        pasteQRResult('a');
+    } else if (a && !b) {
+        pasteQRResult('b');
+    }
+    // If both are empty, paste to field A (Correct Address)
+    else if (!a && !b) {
+        pasteQRResult('a');
+    }
+    // If both have content, show selector
+    // (already shown in scanQRFromFile)
+}
+
+// Camera functionality
+async function openCamera() {
+    try {
+        const modal = document.getElementById('camera-modal');
+        const video = document.getElementById('camera-video');
+        
+        // Request camera access
+        const constraints = {
+            video: {
+                facingMode: currentFacingMode,
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        };
+        
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = cameraStream;
+        
+        modal.style.display = 'flex';
+        
+        // Start scanning for QR codes
+        startQRScanning(video);
+        
+    } catch (error) {
+        console.error('Camera error:', error);
+        showToast('❌ Unable to access camera. Please check permissions.', 'error');
+    }
+}
+
+function closeCamera() {
+    const modal = document.getElementById('camera-modal');
+    modal.style.display = 'none';
+    
+    // Stop camera stream
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    
+    // Stop scanning
+    if (window.qrScannerInterval) {
+        clearInterval(window.qrScannerInterval);
+        window.qrScannerInterval = null;
+    }
+}
+
+async function switchCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+    }
+    
+    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    
+    const video = document.getElementById('camera-video');
+    
+    try {
+        const constraints = {
+            video: {
+                facingMode: currentFacingMode,
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        };
+        
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = cameraStream;
+        
+        // Restart scanning
+        startQRScanning(video);
+        
+    } catch (error) {
+        console.error('Camera switch error:', error);
+        showToast('❌ Unable to switch camera.', 'error');
+    }
+}
+
+async function captureQR() {
+    const video = document.getElementById('camera-video');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    if ('BarcodeDetector' in window) {
+        const detector = new BarcodeDetector({ formats: ['qr_code'] });
+        
+        try {
+            const barcodes = await detector.detect(canvas);
+            
+            if (barcodes.length > 0) {
+                const qrContent = barcodes[0].rawValue;
+                window.qrResult = qrContent;
+                
+                showToast('✅ QR code captured!', 'success');
+                closeCamera();
+                
+                // Show paste selector
+                const label = document.querySelector('.file-input-label');
+                showPasteSelector(label);
+                label.innerHTML = '<i class="fas fa-qrcode"></i> QR Captured!';
+                label.style.borderColor = '#2ecc71';
+                
+                // Auto-paste if possible
+                autoPasteQRResult(qrContent);
+            } else {
+                showToast('❌ No QR code in view. Try again.', 'warning');
+            }
+        } catch (error) {
+            console.error('Capture error:', error);
+            showToast('❌ Error capturing QR code.', 'error');
         }
     } else {
-        showToast('❌ QR code scanning not supported. Please update your browser.', 'error');
+        showToast('❌ QR scanning not supported in this browser.', 'error');
     }
+}
+
+function startQRScanning(video) {
+    if (!('BarcodeDetector' in window)) return;
+    
+    // Auto-scan every 500ms
+    window.qrScannerInterval = setInterval(async () => {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const detector = new BarcodeDetector({ formats: ['qr_code'] });
+            
+            try {
+                const barcodes = await detector.detect(canvas);
+                
+                if (barcodes.length > 0) {
+                    const qrContent = barcodes[0].rawValue;
+                    
+                    // Flash the capture button to indicate detection
+                    const captureBtn = document.getElementById('capture-btn');
+                    captureBtn.style.background = '#2ecc71';
+                    setTimeout(() => {
+                        captureBtn.style.background = '';
+                    }, 200);
+                    
+                    // Auto-capture after 1 second of detection
+                    if (!window.qrDetectionTime) {
+                        window.qrDetectionTime = Date.now();
+                    } else if (Date.now() - window.qrDetectionTime > 1000) {
+                        captureQR();
+                        window.qrDetectionTime = null;
+                    }
+                } else {
+                    window.qrDetectionTime = null;
+                }
+            } catch (error) {
+                console.error('Auto-scan error:', error);
+            }
+        }
+    }, 500);
 }
 
 // Initialize
@@ -1025,49 +1868,77 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('light');
         theme = 'light';
         document.getElementById('theme-icon').textContent = '☀️';
+        document.getElementById('theme-text').textContent = 'Light';
     }
     
     // Show disclaimer if not hidden
     if (!localStorage.getItem('hide-disclaimer')) {
         setTimeout(() => {
             document.getElementById('disc').style.display = 'block';
-        }, 3000);
+        }, 2000);
     }
     
     // Add input listeners for real-time type detection
     document.getElementById('a').addEventListener('input', updateTypeBadges);
     document.getElementById('b').addEventListener('input', updateTypeBadges);
     
-    // Add Enter key support
-    document.getElementById('a').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            compare();
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Ctrl/Cmd + Enter to compare
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            if (document.getElementById('a').value && document.getElementById('b').value) {
+                compare();
+            }
         }
-    });
-    
-    document.getElementById('b').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            compare();
+        
+        // Ctrl/Cmd + L to clear
+        if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+            clearFields();
+            e.preventDefault();
+        }
+        
+        // Escape to close camera
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('camera-modal');
+            if (modal.style.display === 'flex') {
+                closeCamera();
+            }
         }
     });
     
     // Make all address codes selectable on click
     document.querySelectorAll('.address-code').forEach(code => {
         code.addEventListener('click', function() {
+            const selection = window.getSelection();
             const range = document.createRange();
             range.selectNodeContents(this);
-            const selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
         });
     });
     
-    // Add click-to-copy for address codes
+    // Add double-click to copy for address codes
     document.querySelectorAll('.address-code').forEach(code => {
         code.addEventListener('dblclick', function() {
             copyToClipboard(this.textContent);
         });
     });
+    
+    // Initialize type badges
+    updateTypeBadges();
+    
+    // Add example addresses for testing
+    console.log('Test addresses available:', testAddresses);
+    
+    // Test QR scanning support
+    if (!('BarcodeDetector' in window)) {
+        console.warn('QR code scanning requires BarcodeDetector API');
+        const cameraBtn = document.getElementById('camera-btn');
+        if (cameraBtn) {
+            cameraBtn.disabled = true;
+            cameraBtn.title = 'QR scanning not supported in this browser';
+        }
+    }
 });
 </script>
 </body>
